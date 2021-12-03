@@ -29,8 +29,12 @@ let epsilon = sums.reduce((acc, curr, i) => {
 
 
 
+console.log(sums);
+console.log("gamma:" + gamma);
+console.log("epsilon:" + epsilon);
 
-// console.log("gamma:" + gamma);
-// console.log("epsilon:" + epsilon);
+console.log(gamma*epsilon);
 
-// console.log(gamma*epsilon);
+
+// [ 7, 5, 8, 7, 5 ]
+// 10110

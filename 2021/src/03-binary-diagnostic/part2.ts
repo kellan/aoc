@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 
 
+// sum vertical colums
 function getSums(lines: number[][]): number[] {
 	let sums = new Array<number>(lines[0].length).fill(0)
 
@@ -21,7 +22,7 @@ let oxygen = lines;
 for (let i = 0; i < lines[0].length; i++) {
 	let sums = getSums(oxygen);
 	let half = oxygen.length / 2;
-	let target = sums[i] >= half ? 1 :0;
+	let target = sums[i] >= half ? 1 :0; // 1 bits greater or equal to half, target is 1
 	
 	oxygen = oxygen.filter( (line) => {
 		return line[i] == target
@@ -40,7 +41,7 @@ let co2 = lines;
 for (let i = 0; i < lines[0].length; i++) {
 	let sums = getSums(co2);
 	let half = co2.length / 2;
-	let target = sums[i] >= half ? 0 :1;
+	let target = sums[i] >= half ? 0 : 1; // 0 bits less than or equal to half, target is 0
 	
 	co2 = co2.filter( (line) => {
 		return line[i] == target
