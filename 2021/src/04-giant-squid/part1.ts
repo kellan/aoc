@@ -22,7 +22,7 @@ function parseBoard(input: string): Board {
 	
 	let rows = input.split('\n');
 	rows.forEach( (row, y:number) => {
-		let nums = row.trim().split(/\s+/);
+		let nums = row.trim().split(/\s+/); // make sure to split on more than 1 space because space padded input
 		nums.forEach( (n, x:number) => {
 			where.set(+n, [x,y]);
 			unmarkedNumbers.push(+n);
@@ -58,6 +58,7 @@ function playGame(game: Game): Board | undefined {
 
 					board.lastMarked = num;
 
+					// if we've marked 5 in a row in a row or column we have a winner.
 					if (board.mrow.indexOf(5) > -1 || board.mcol.indexOf(5) > -1) {
 						return board;
 					}
