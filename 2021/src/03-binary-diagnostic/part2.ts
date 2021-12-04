@@ -15,7 +15,7 @@ function getSums(lines: number[][]): number[] {
 
 let input = fs.readFileSync(process.stdin.fd, 'utf-8');
 let lines = input.split('\n')
-	.map(line => line.split('').map((n => +n)))
+	.map(line => line.split('').map((n => +n)))   // array of array of binaries
 
 let oxygen = lines;
 
