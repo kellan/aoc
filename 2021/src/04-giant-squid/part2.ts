@@ -57,7 +57,9 @@ class Board {
 
     mark(num: number) {
         if (this.where.has(num)) {
-            let xy = this.where.get(num); // just here to make TS happy
+            // just here to make TS happy, i would expect to be able to do
+            // let [x,y] = this.where.get(num)
+            let xy = this.where.get(num);
             if (xy) {
                 this.mrow[xy[0]] = this.mrow[xy[0]] ? this.mrow[xy[0]]+1 : 1;
                 this.mcol[xy[1]] = this.mcol[xy[1]] ? this.mcol[xy[1]]+1 : 1;
