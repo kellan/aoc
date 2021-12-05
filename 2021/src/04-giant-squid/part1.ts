@@ -47,22 +47,25 @@ function playGame(game: Game): Board | undefined {
     for (let num of game.draw) {
         for (let board of game.boards) {
             if (board.where.has(num)) {
-                let xy = board.where.get(num); // just here to make TS happy
-                if (xy) {
-                    board.mrow[xy[0]] = board.mrow[xy[0]] ? board.mrow[xy[0]]+1 : 1;
-                    board.mcol[xy[1]] = board.mcol[xy[1]] ? board.mcol[xy[1]]+1 : 1;
+                // just here to make TS happy, i would expect to be able to do
+                // let [x,y] = board.where.get(num);
+                let [x,y] = board.where.get(num) || [];
 
-                    
-                    let mIndex = board.unmarkedNumbers.indexOf(num);
-                    board.unmarkedNumbers.splice(mIndex, 1);
+                if (x) {
+                    board.mrow[x] = board.mrow[x] ? board.mrow[x]+1 : 1;
+                }
+                if (y) {
+                    board.mcol[y] = board.mcol[y] ? board.mcol[y]+1 : 1;
+                }
+                
+                let mIndex = board.unmarkedNumbers.indexOf(num);
+                board.unmarkedNumbers.splice(mIndex, 1);
 
-                    board.lastMarked = num;
+                board.lastMarked = num;
 
-                    // if we've marked 5 in a row in a row or column we have a winner.
-                    if (board.mrow.indexOf(5) > -1 || board.mcol.indexOf(5) > -1) {
-                        return board;
-                    }
-
+                // if we've marked 5 in a row in a row or column we have a winner.
+                if (board.mrow.indexOf(5) > -1 || board.mcol.indexOf(5) > -1) {
+                    return board;
                 }
             }
         }

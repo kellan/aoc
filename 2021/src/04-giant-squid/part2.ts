@@ -59,14 +59,17 @@ class Board {
         if (this.where.has(num)) {
             // just here to make TS happy, i would expect to be able to do
             // let [x,y] = this.where.get(num)
-            let xy = this.where.get(num);
-            if (xy) {
-                this.mrow[xy[0]] = this.mrow[xy[0]] ? this.mrow[xy[0]]+1 : 1;
-                this.mcol[xy[1]] = this.mcol[xy[1]] ? this.mcol[xy[1]]+1 : 1;
-                let mIndex = this.unmarkedNumbers.indexOf(num);
-                this.unmarkedNumbers.splice(mIndex, 1);
-                this.lastMarked = num;
+            let [x,y] = this.where.get(num) || [];
+            if (x) {
+                this.mrow[x] = this.mrow[x] ? this.mrow[x]+1 : 1;
             }
+            if (y) { 
+                this.mcol[y] = this.mcol[y] ? this.mcol[y]+1 : 1;
+            }
+            
+            let mIndex = this.unmarkedNumbers.indexOf(num);
+            this.unmarkedNumbers.splice(mIndex, 1);
+            this.lastMarked = num;
         }
     }
 
