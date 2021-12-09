@@ -2,7 +2,7 @@ import * as fs from 'fs';
 
 
 
-function triangle(n: number): number {
+function gauss(n: number): number {
     return (n*(n+1)/2)
 }
 
@@ -26,7 +26,7 @@ let best_score = Number.MAX_SAFE_INTEGER;
 for (let i = start; i <= end; i++) {
     let score = 0;
     for (let j = 0; j < positions.length; j++) {
-        score += triangle(Math.abs(i - positions[j]));
+        score += gauss(Math.abs(i - positions[j]));
     }
     if (score < best_score) {
         best_pos = i;
@@ -36,4 +36,4 @@ for (let i = start; i <= end; i++) {
 
 console.log(best_pos, best_score);
 
-//console.log(triangle(4), triangle(5), triangle(10), triangle(11));
+//console.log(gauss(4), gauss(5), gauss(10), gauss(11));
