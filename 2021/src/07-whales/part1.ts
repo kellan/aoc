@@ -20,7 +20,7 @@ let best_score = Number.MAX_SAFE_INTEGER;
 for (let i = start; i <= end; i++) {
     let score = 0;
     for (let j = 0; j < positions.length; j++) {
-        score += Math.abs(i-j);
+        score += Math.abs(i - positions[j]);
     }
     if (score < best_score) {
         best_pos = i;
