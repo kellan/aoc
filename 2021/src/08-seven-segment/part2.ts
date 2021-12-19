@@ -63,6 +63,7 @@ function generate_mapping(segments:string[]): Map<string,string> {
             if (has_subset(s, four)) {
                 nine = s;
             } else if (!has_subset(s, four) && has_subset(s, seven)) {
+                // this pattern discovered by Anwen
                 zero = s;
             } else {
                 six = s;
