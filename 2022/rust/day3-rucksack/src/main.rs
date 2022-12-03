@@ -1,39 +1,55 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::io::{self, Read};
 
 fn main() {
-    part1();
+    //part1();
+    part2();
 }
 
 fn part1() {
-    let buffer = read_stdin();
-    let mut answer: u32 = 0;
-    let priorities = priorities();
+    let input = read_stdin();
 
-    for line in buffer.lines() {
-        let dupe = find_dupe(line);
-        if let Some(j) = dupe {
-            let score = priorities.get(&j).unwrap_or(&0);
-            answer += score;
-        };
-    }
+    let answer: u32 = input
+        .lines()
+        .map(|line| match find_dupe(line) {
+            Some(j) => score(j),
+            None => 0,
+        })
+        .sum();
+
     println!("{}", answer);
 }
 
-fn priorities() -> HashMap<char, u32> {
-    let mut priorities: HashMap<char, u32> = HashMap::new();
-    let mut p: u32 = 1;
+fn part2() {
+    let input = read_stdin();
 
-    ('a'..='z').for_each(|c| {
-        priorities.insert(c, p);
-        p += 1
-    });
-    ('A'..='Z').for_each(|c| {
-        priorities.insert(c, p);
-        p += 1
-    });
+    let answer: u32 = input
+        .lines()
+        .collect::<Vec<_>>()
+        .chunks(3)
+        .map(|chunk| match find_chunk_dupe(chunk) {
+            Some(c) => score(c),
+            None => 0,
+        })
+        .sum();
 
-    priorities
+    println!("{}", answer);
+}
+
+// borrowed from b0rk
+// https://github.com/jvns/aoc2022/blob/main/day03/solve.rs
+fn score(c: char) -> u32 {
+    if c.is_ascii_lowercase() {
+        c as u32 - 96
+    } else {
+        c as u32 - 64 + 26
+    }
+}
+
+fn find_chunk_dupe(chunk: &[&str]) -> Option<char> {
+    chunk[0]
+        .chars()
+        .find(|&c| chunk[1].contains(c) && chunk[2].contains(c))
 }
 
 fn find_dupe(line: &str) -> Option<char> {
