@@ -2,8 +2,8 @@ use std::collections::HashSet;
 use std::io::{self, Read};
 
 fn main() {
-    //part1();
-    part2();
+    part1();
+    //part2();
 }
 
 fn part1() {
@@ -53,20 +53,11 @@ fn find_chunk_dupe(chunk: &[&str]) -> Option<char> {
 }
 
 fn find_dupe(line: &str) -> Option<char> {
-    let mut seen: HashSet<char> = HashSet::new();
-    let mid = line.len() / 2;
-    let mut dupe = None;
-    for (i, j) in line.chars().enumerate() {
-        if i < mid {
-            seen.insert(j);
-        } else {
-            if seen.contains(&j) {
-                dupe = Some(j);
-            }
-        }
-    }
+    let contents = line.split_at(line.len() / 2);
+    let left: HashSet<char> = contents.0.chars().collect();
+    let right: HashSet<char> = contents.1.chars().collect();
 
-    dupe
+    left.intersection(&right).next().copied()
 }
 
 fn read_stdin() -> String {
