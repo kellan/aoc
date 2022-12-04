@@ -7,9 +7,11 @@ fn main() {
         l.start <= r.start && l.end >= r.end || l.start >= r.start && l.end <= r.end
     });
 
-    let answer2 = solve(&ranges, |l, r| {
-        l.end >= r.start && l.start <= r.end || r.end >= l.start && r.start <= l.end
-    });
+    //    let answer2 = solve(&ranges, |l, r| !(l.end < r.start || r.end < l.start));
+
+    // per https://nedbatchelder.com/blog/201310/range_overlap_in_two_compares.html
+    // https://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap/325964#325964
+    let answer2 = solve(&ranges, |l, r| l.end >= r.start && r.end >= l.start);
 
     dbg!(answer1);
     dbg!(answer2);
