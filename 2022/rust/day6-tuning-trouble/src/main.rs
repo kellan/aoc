@@ -3,19 +3,27 @@ use std::io::{self, Read};
 
 fn main() {
     let input = read_stdin();
-    part1(input);
+    part2(input);
 }
 
 fn part1(input: String) {
-    let mut set: HashSet<char> = HashSet::new();
+    println!("{}", solve(input, 4));
+}
+
+fn part2(input: String) {
+    println!("{}", solve(input, 14));
+}
+
+fn solve(input: String, num: usize) -> usize {
     let chars: Vec<char> = input.chars().collect();
-    for (i, c) in chars.iter().enumerate() {
-        let set = chars[i..i + 4].iter().collect::<HashSet<_>>();
-        if set.len() == 4 {
-            println!("{}", i + 4);
-            break;
+    for (i, _c) in chars.iter().enumerate() {
+        let set = chars[i..i + num].iter().collect::<HashSet<_>>();
+        if set.len() == num {
+            return i + num;
         }
     }
+
+    0
 }
 
 fn read_stdin() -> String {
