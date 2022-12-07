@@ -9,24 +9,24 @@ fn main() {
 
 fn parse_input(input: String) -> Folder {
     let mut root = Folder::new(String::from("/"));
-    let mut cwd = &root;
+    let mut cwd = &mut root;
 
     input.lines().for_each(|l| {
         if l == "$ cd .." {
             if let Some(parent) = &cwd.parent {
-                cwd = &parent;
+                cwd = &mut parent;
             }
         } else if l == "$ cd /" {
-            cwd = &root;
+            cwd = &mut root;
         } else if l.starts_with("ls") {
             //
         } else if l.starts_with("dir") {
-            let name = l.replace("dir ", "");
-            if !cwd.folders.contains_key(&name) {
-                let f = Folder::new(name);
-                //cwd.folders.insert(f.name.to_owned(), f);
-                cwd.name = f.name;
-            }
+            // let name = l.replace("dir ", "");
+            // if !cwd.folders.contains_key(&name) {
+            //     let f = Folder::new(name);
+            //     //cwd.folders.insert(f.name.to_owned(), f);
+            //     cwd.name = f.name;
+            // }
         } else {
             // file
         }
