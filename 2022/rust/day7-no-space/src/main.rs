@@ -1,70 +1,117 @@
-use regex::Regex;
-use std::collections::HashMap;
 use std::io::{self, Read};
 
 fn main() {
     let input = read_stdin();
-    let root = parse_input(input);
+    let mut lines = input.lines();
+    let mut root = Folder::new(String::from("/"));
+    _ = lines.next(); // remove root cd /
+    parse_folder(&mut root, &mut lines);
+    let sizes = root.smaller_than();
+    let sum: u32 = sizes.iter().map(|(_, s)| s).sum();
+    dbg!(sum);
+
+    let free = 70_000_000 - root.size();
+    let diff = 30_000_000 - free;
+
+    let sizes = root.larger_than(diff);
+    let min = sizes.iter().map(|(_, s)| s).min();
+    dbg!(min);
 }
 
-fn parse_input(input: String) -> Folder {
-    let mut root = Folder::new(String::from("/"));
-    let mut cwd = &mut root;
+fn parse_folder(root: &mut Folder, lines: &mut std::str::Lines) {
+    while let Some(l) = lines.next() {
+        let parts = l.split_whitespace().collect::<Vec<&str>>();
 
-    input.lines().for_each(|l| {
-        if l == "$ cd .." {
-            if let Some(parent) = &cwd.parent {
-                cwd = &mut parent;
+        match (parts[0], parts[1]) {
+            ("$", "cd") => {
+                let name = parts[2];
+                if name == ".." {
+                    return;
+                }
+                let mut f = Folder::new(String::from(name));
+                parse_folder(&mut f, lines);
+                root.folders.push(f);
             }
-        } else if l == "$ cd /" {
-            cwd = &mut root;
-        } else if l.starts_with("ls") {
-            //
-        } else if l.starts_with("dir") {
-            // let name = l.replace("dir ", "");
-            // if !cwd.folders.contains_key(&name) {
-            //     let f = Folder::new(name);
-            //     //cwd.folders.insert(f.name.to_owned(), f);
-            //     cwd.name = f.name;
-            // }
-        } else {
-            // file
+            ("$", "ls") => {}
+            ("dir", _name) => {}
+            (size, name) => {
+                root.files.push(File {
+                    _name: String::from(name),
+                    size: size.parse().unwrap(),
+                });
+            }
         }
-    });
-
-    root
+    }
 }
 
 #[derive(Debug)]
 struct Folder {
-    parent: Option<Box<Folder>>,
     name: String,
-    size: u32,
     files: Vec<File>,
-    folders: HashMap<String, Folder>,
+    folders: Vec<Folder>,
 }
 
 impl Folder {
     fn new(name: String) -> Folder {
         Folder {
             name: name,
-            parent: None,
-            size: 0,
             files: vec![],
-            folders: HashMap::new(),
+            folders: vec![],
         }
     }
 
-    fn folder(&mut self, name: String) {
-        if !self.folders.contains_key(&name) {
-            let f = Folder::new(name);
-            self.folders.insert(f.name.to_owned(), f);
-        }
+    fn size(&self) -> u32 {
+        // was going to memoize here, but that would require a mutable reference
+        let file_size: u32 = self.files.iter().map(|f| f.size).sum();
+        let folder_size: u32 = self.folders.iter().map(|f| f.size()).sum();
+        file_size + folder_size
     }
+
+    fn filter(&self, check: fn(u32) -> bool) -> Vec<(String, u32)> {
+        let mut sizes: Vec<(String, u32)> = Vec::new();
+        if check(self.size()) {
+            sizes.push((self.name.to_owned(), self.size()));
+        }
+
+        for f in self.folders.iter() {
+            sizes.extend(f.filter(check));
+        }
+
+        sizes
+    }
+
+    fn smaller_than(&self) -> Vec<(String, u32)> {
+        fn check(size: u32) -> bool {
+            return size <= 100_000;
+        }
+
+        self.filter(check)
+    }
+
+    fn larger_than(&self, target: u32) -> Vec<(String, u32)> {
+        // can't make this work with filter(), can't figure out closures
+
+        let mut sizes: Vec<(String, u32)> = Vec::new();
+        if self.size() >= target {
+            sizes.push((self.name.to_owned(), self.size()));
+        }
+
+        for f in self.folders.iter() {
+            sizes.extend(f.larger_than(target));
+        }
+
+        sizes
+    }
+
+    // fn all_sub_folders(&self) -> Vec<Folder> {
+    //     let sizes: Vec:<String,u32> = Vec::new();
+
+    // }
 }
+
 #[derive(Debug)]
 struct File {
-    name: String,
+    _name: String,
     size: u32,
 }
 
