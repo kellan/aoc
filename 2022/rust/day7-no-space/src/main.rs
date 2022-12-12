@@ -61,7 +61,7 @@ impl Folder {
     }
 
     fn size(&self) -> u32 {
-        // was going to memoize here, but that would require a mutable reference
+        // XXX: was going to memoize here, but that would require a mutable reference
         let file_size: u32 = self.files.iter().map(|f| f.size).sum();
         let folder_size: u32 = self.folders.iter().map(|f| f.size()).sum();
         file_size + folder_size
@@ -89,7 +89,7 @@ impl Folder {
     }
 
     fn larger_than(&self, target: u32) -> Vec<(String, u32)> {
-        // can't make this work with filter(), can't figure out closures
+        // XXX: can't make this work with filter(), can't figure out closures
 
         let mut sizes: Vec<(String, u32)> = Vec::new();
         if self.size() >= target {
