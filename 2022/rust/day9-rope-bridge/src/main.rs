@@ -46,16 +46,20 @@ impl Rope {
 
     fn update_tail(&mut self) {
         if self.head.distance(&self.tail) >= 2.0 {
-            if self.head.x > self.tail.x {
-                self.tail.x += 1;
-            } else {
-                self.tail.x -= 1;
+            if self.head.x != self.tail.x {
+                if self.head.x > self.tail.x {
+                    self.tail.x += 1;
+                } else {
+                    self.tail.x -= 1;
+                }
             }
 
-            if self.head.y > self.tail.y {
-                self.tail.y += 1;
-            } else {
-                self.tail.y -= 1;
+            if self.head.y != self.tail.y {
+                if self.head.y > self.tail.y {
+                    self.tail.y += 1;
+                } else {
+                    self.tail.y -= 1;
+                }
             }
             self.tail_seen.insert(self.tail.clone());
         }
@@ -103,11 +107,9 @@ mod tests {
         let mut rope = Rope::new();
 
         assert_eq!(rope.tail_seen.len(), 1);
-
         let cmd = (String::from('R'), 4);
         rope.cmd(cmd);
         assert_eq!(rope.tail_seen.len(), 4);
-
         let cmd = (String::from('U'), 4);
         rope.cmd(cmd);
         assert_eq!(rope.tail_seen.len(), 7);
