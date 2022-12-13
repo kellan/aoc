@@ -7,8 +7,64 @@ fn main() {
     // println!("{}", visible(0, 1, &forest));
     // println!("{}", visible(1, 1, &forest));
     // println!("{}", visible(2, 2, &forest));
-    let visible_trees = visible_trees(&forest);
-    dbg!(visible_trees);
+    // let visible_trees = visible_trees(&forest);
+    // dbg!(visible_trees);
+
+    // let left = &forest[1][0..2].iter().rev().collect::<Vec<_>>();
+    // let up = &forest[0..2].iter().map(|v| v[2]).rev().collect::<Vec<_>>();
+    // dbg!(up);
+
+    let scenic = scenic_scores(&forest);
+    let max = scenic.iter().max();
+    dbg!(max);
+}
+
+fn scenic_scores(forest: &Vec<Vec<u32>>) -> Vec<usize> {
+    let mut scores: Vec<usize> = Vec::new();
+
+    for i in 0..forest.len() {
+        for j in 0..forest[i].len() {
+            if i == 0 || j == 0 || i == forest.len() - 1 || j == forest[i].len() - 1 {
+                continue;
+            }
+
+            let tree = &forest[i][j];
+
+            let left = forest[i][0..j]
+                .iter()
+                .map(|i| i.to_owned())
+                .rev()
+                .collect::<Vec<_>>();
+
+            let left = trim_to(tree, &left);
+
+            let right = &forest[i][j + 1..].to_vec();
+            let right = trim_to(tree, right);
+
+            let up = &forest[0..i].iter().map(|v| v[j]).rev().collect::<Vec<_>>();
+            let up = trim_to(tree, up);
+
+            let down = &forest[i + 1..].iter().map(|v| v[j]).collect::<Vec<_>>();
+            let down = trim_to(tree, down);
+
+            let score = left.len() * right.len() * up.len() * down.len();
+
+            scores.push(score);
+        }
+    }
+
+    scores
+}
+
+fn trim_to(target: &u32, v: &Vec<u32>) -> Vec<u32> {
+    let mut trimmed: Vec<u32> = Vec::new();
+    for i in v {
+        trimmed.push(*i);
+        if i >= target {
+            break;
+        }
+    }
+    trimmed
 }
 
 fn visible_trees(forest: &Vec<Vec<u32>>) -> u32 {
