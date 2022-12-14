@@ -1,7 +1,4 @@
-use std::{
-    f32::consts::E,
-    io::{self, Read},
-};
+use std::io::{self, Read};
 
 fn main() {
     let input = read_stdin();
