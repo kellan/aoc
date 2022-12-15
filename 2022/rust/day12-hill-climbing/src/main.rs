@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::io::{self, Read};
 
 fn main() {
@@ -11,10 +11,10 @@ fn main() {
 }
 
 fn bfs(grid: HashMap<Point, u32>, start: Point, end: Point) -> (Point, u32) {
-    let mut q: Vec<(Point, u32)> = Vec::from([(start, 0)]);
+    let mut q: VecDeque<(Point, u32)> = VecDeque::from([(start, 0)]);
     let mut visited: HashSet<Point> = HashSet::new();
 
-    while let Some((p, dist)) = q.pop() {
+    while let Some((p, dist)) = q.pop_front() {
         if p == end {
             return (p, dist);
         }
@@ -23,7 +23,7 @@ fn bfs(grid: HashMap<Point, u32>, start: Point, end: Point) -> (Point, u32) {
             if visited.contains(&neighbor) {
                 continue;
             }
-            q.push((neighbor.to_owned(), dist + 1));
+            q.push_back((neighbor.to_owned(), dist + 1));
             visited.insert(neighbor.to_owned());
         }
     }
@@ -33,7 +33,7 @@ fn bfs(grid: HashMap<Point, u32>, start: Point, end: Point) -> (Point, u32) {
 
 fn neighbors(grid: &HashMap<Point, u32>, point: &Point) -> Vec<Point> {
     let mut neighbors: Vec<Point> = Vec::new();
-    let height = grid.get(point).unwrap();
+    let height = *grid.get(point).unwrap() as i32;
 
     const DIRECTIONS: [(i32, i32); 4] = [
         (-1, 0), // up
@@ -45,16 +45,13 @@ fn neighbors(grid: &HashMap<Point, u32>, point: &Point) -> Vec<Point> {
     for delta in DIRECTIONS {
         let dh = point.0 as i32 + delta.0;
         let dw = point.1 as i32 + delta.1;
-        if dh >= 0 && dw >= 0 {
-            let n = Point(dh as u32, dw as u32);
-            if let Some(n_height) = grid.get(&n) {
-                if *n_height as i32 - *height as i32 <= 1 {
-                    neighbors.push(n);
-                }
+        let n = Point(dh as u32, dw as u32);
+        if let Some(n_height) = grid.get(&n) {
+            if *n_height as i32 - height <= 1 {
+                neighbors.push(n);
             }
         }
     }
-
     neighbors
 }
 
