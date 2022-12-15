@@ -1,11 +1,37 @@
+use std::collections::HashMap;
 use std::io::{self, Read};
 
 fn main() {
     println!("Hello, world!");
     let input = read_stdin();
+    let mut troop = parse(input);
 
-    parse(input);
+    //troop.get_mut(&0).unwrap().tick_part1();
+    part1(troop, 20);
+    //part2(troop, 1);
 }
+
+fn part1(mut troop: HashMap<u32, Monkey>, rounds: u32) {
+    for _i in 0..rounds {
+        for n in 0..troop.len() {
+            let distribute = troop.get_mut(&(n as u32)).unwrap().tick_part1();
+            //dbg!(distribute);
+            for dist in distribute {
+                troop.get_mut(&(dist.0 as u32)).unwrap().items.push(dist.1)
+            }
+        }
+    }
+
+    let mut scores: Vec<u32> = troop.iter().map(|(k, v)| v.inspected).collect();
+    scores.sort();
+    scores.reverse();
+    println!("{}", scores[0] * scores[1]);
+}
+
+// fn part2(mut troop: HashMap<u32, Monkey>, rounds: u32) {
+//     let modulo: u32 = troop.iter().map(|k, v| v.divisor).product();
+//     println!("modulo {}", modulo);
+// }
 
 #[derive(Debug)]
 struct Monkey {
@@ -15,6 +41,7 @@ struct Monkey {
     divisor: u32,
     on_true: u32,
     on_false: u32,
+    inspected: u32,
 }
 
 impl Monkey {
@@ -26,7 +53,25 @@ impl Monkey {
             divisor: 0,
             on_true: 0,
             on_false: 0,
+            inspected: 0,
         }
+    }
+
+    fn tick_part1(&mut self) -> Vec<(u32, u32)> {
+        let mut distribute: Vec<(u32, u32)> = Vec::new();
+        while let Some(item) = self.items.pop() {
+            let mut worried = self.operation.inspect(item);
+            self.inspected += 1;
+            worried = worried / 3;
+
+            if worried % self.divisor == 0 {
+                distribute.push((self.on_true, worried));
+            } else {
+                distribute.push((self.on_false, worried));
+            }
+        }
+
+        distribute
     }
 }
 
@@ -47,10 +92,20 @@ impl Operation {
             _ => Operation::Noop,
         }
     }
+
+    fn inspect(&self, old: u32) -> u32 {
+        match self {
+            Operation::Square => old * old,
+            Operation::Add(num) => old + num,
+            Operation::Multiply(num) => old * num,
+            Operation::Noop => old,
+        }
+    }
 }
 
-fn parse(input: String) {
+fn parse(input: String) -> HashMap<u32, Monkey> {
     let parts = input.split("\n\n");
+    let mut troop: HashMap<u32, Monkey> = HashMap::new();
 
     for part in parts {
         let mut monkey = Monkey::new();
@@ -70,8 +125,11 @@ fn parse(input: String) {
                 _ => (),
             }
         }
-        dbg!(monkey);
+        //dbg!(monkey);
+        troop.insert(monkey.id, monkey);
     }
+
+    troop
 }
 
 fn to_num(input: &str) -> u32 {
