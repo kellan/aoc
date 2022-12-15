@@ -11,17 +11,18 @@ enum Node {
 
 fn main() {
     let input = read_stdin();
-    let sum = solve1(input);
-    dbg!(sum);
+    // part 1
+    // let sum = solve1(input);
+    // dbg!(sum);
+
+    let product = solve2(input);
+    dbg!(product);
 }
 
 fn solve1(input: String) -> usize {
     let mut sum = 0;
     for (i, pair) in input.split("\n\n").enumerate() {
-        let pair: Vec<Node> = pair
-            .lines()
-            .map(|line| serde_json::from_str(line).unwrap())
-            .collect();
+        let pair: Vec<Node> = pair.lines().map(|line| parse_packet(line)).collect();
 
         match packet_order(&pair[0], &pair[1]) {
             Ordering::Greater => {}
@@ -34,6 +35,31 @@ fn solve1(input: String) -> usize {
     sum
 }
 
+fn solve2(input: String) -> usize {
+    let mut lines: Vec<&str> = input.lines().filter(|line| !line.is_empty()).collect();
+    let mut packets: Vec<Node> = lines.iter().map(|line| parse_packet(line)).collect();
+
+    let two = parse_packet("[[2]]");
+    let six = parse_packet("[[6]]");
+
+    packets.push(two.to_owned());
+    packets.push(six.to_owned());
+
+    packets.sort_by(|a, b| packet_order(a, b));
+
+    let mut indexes: Vec<usize> = Vec::new();
+
+    for (i, n) in packets.iter().enumerate() {
+        if *n == two || *n == six {
+            indexes.push(i + 1);
+        }
+    }
+    return indexes.iter().product();
+}
+
+fn parse_packet(input: &str) -> Node {
+    serde_json::from_str(input).unwrap()
+}
 fn packet_order(a: &Node, b: &Node) -> Ordering {
     match (a, b) {
         (Node::Int(a), Node::Int(b)) => a.cmp(b),
