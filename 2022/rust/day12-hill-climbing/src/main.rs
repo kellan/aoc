@@ -4,12 +4,12 @@ use std::io::{self, Read};
 fn main() {
     let input = read_stdin();
     let (grid, start, end, low_points) = parse(input);
-    dbg!(&start, &end);
+    //dbg!(&start, &end);
     // part 1
     // let end = HashSet::from([end]);
     // let (found, dist) = bfs(grid, start, end, false);
     // part 2
-    dbg!(&low_points);
+    //dbg!(&low_points);
     let (found, dist) = bfs(grid, end, low_points, true);
     dbg!(found);
     dbg!(dist);
