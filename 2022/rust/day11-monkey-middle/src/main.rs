@@ -83,7 +83,7 @@ impl Monkey {
             }
 
             if let Some(bored) = bored {
-                worried = worried / 3;
+                worried = worried / bored;
             }
 
             if worried % self.divisor == 0 {
