@@ -1,0 +1,2 @@
+* animate the drawing
+* minmax iterator so I don't have to keep making multiple passes over a list
