@@ -5,50 +5,35 @@ use std::io::{self, Read};
 fn main() {
     let input = read_stdin();
     let sensors = parse(input);
-    //dbg!(&sensors);
-    //dbg!(&sensors[6]);
-    //dbg!(sensors[6].boundary());
     solve1(sensors, 2000000);
 }
 
 fn solve1(sensors: Vec<Sensor>, row: i32) {
-    let mut excluded = 0;
-
-    let min_x = sensors
-        .iter()
-        .map(|s| s.boundary())
-        .flatten()
-        .map(|point| point.x)
-        .min()
-        .unwrap();
-    let max_x = sensors
-        .iter()
-        .map(|s| s.boundary())
-        .flatten()
-        .map(|point| point.x)
-        .max()
-        .unwrap();
-
+    let (min_x, max_x) = cave_max_min_x(&sensors);
     dbg!(&min_x, &max_x);
 
     let beacons: Vec<Point> = sensors.iter().map(|s| s.beacon.to_owned()).collect();
+    let mut points: Vec<i32> = vec![];
+
+    let relevant_sensors: Vec<&Sensor> = sensors
+        .iter()
+        .filter(|s| i32::abs(s.coords.y - row) <= s.radius)
+        .collect();
 
     for x in min_x..=max_x {
         let p = Point { x: x, y: row };
-
         if beacons.contains(&p) {
             continue;
         }
 
-        for s in sensors.iter() {
-            if (poly_contains(&s.boundary(), &Point { x: x, y: row })) {
-                excluded += 1;
+        for s in relevant_sensors.iter() {
+            if s.in_range(&p) {
+                points.push(p.x);
                 break;
             }
         }
     }
-
-    dbg!(excluded);
+    dbg!(points.len());
 }
 
 fn parse(input: String) -> Vec<Sensor> {
@@ -61,9 +46,14 @@ fn parse(input: String) -> Vec<Sensor> {
             let bx = captures[3].parse().unwrap();
             let by = captures[4].parse().unwrap();
 
+            let coords = Point { x: sx, y: sy };
+            let beacon = Point { x: bx, y: by };
+            let radius = coords.manhattan_distance(&beacon);
+
             let s = Sensor {
-                coords: Point { x: sx, y: sy },
-                beacon: Point { x: bx, y: by },
+                coords,
+                beacon,
+                radius,
             };
 
             sensors.push(s);
@@ -73,91 +63,27 @@ fn parse(input: String) -> Vec<Sensor> {
     sensors
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 struct Sensor {
     coords: Point,
     beacon: Point,
+    radius: i32,
 }
 
 impl Sensor {
-    fn boundary(&self) -> Vec<Point> {
-        let radius = self.coords.manhattan_distance(&self.beacon);
-        let boundary: Vec<Point> = vec![
-            Point {
-                x: self.coords.x - radius,
-                y: self.coords.y,
-            },
-            Point {
-                x: self.coords.x,
-                y: self.coords.y - radius,
-            },
-            Point {
-                x: self.coords.x + radius,
-                y: self.coords.y,
-            },
-            Point {
-                x: self.coords.x,
-                y: self.coords.y + radius,
-            },
-        ];
-
-        boundary
+    fn in_range(&self, p: &Point) -> bool {
+        self.coords.manhattan_distance(p) <= self.radius
     }
 }
 
-fn poly_contains(poly: &Vec<Point>, point: &Point) -> bool {
-    let x = point.x;
-    let y = point.y;
+fn cave_max_min_x(sensors: &Vec<Sensor>) -> (i32, i32) {
+    let max_x = sensors.iter().map(|s| s.coords.x + s.radius).max().unwrap();
+    let min_x = sensors.iter().map(|s| s.coords.x - s.radius).min().unwrap();
 
-    let mut contains = false;
-    for (i, p) in poly.iter().enumerate() {
-        let j = poly.len() - 1;
-
-        //dbg!(i, p);
-        let xi = poly[i].x;
-        let yi = poly[i].y;
-
-        let xj = poly[j].x;
-        let yj = poly[j].y;
-
-        let intersect: bool = (yi > y) != (yj > y) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-        if (intersect) {
-            contains = !contains;
-        }
-    }
-
-    contains
+    (min_x, max_x)
 }
 
-//     let mut k_prev = 0;
-//     let mut result = false;
-
-//     for (k, p) in self.coordinates.iter().enumerate() {
-//         if k <= 0 {
-//             k_prev = self.coordinates.len() - 1
-//         } else {
-//             k_prev = k - 1
-//         }
-
-//         let iflng = p[1] < point.lng && self.coordinates[k_prev][1] >= point.lng
-//             || self.coordinates[k_prev][1] < point.lng && p[1] >= point.lng;
-//         let iflat = p[0] <= point.lat || self.coordinates[k_prev][0] <= point.lat;
-
-//         if iflng && iflat {
-//             if p[0]
-//                 + (point.lng - p[1]) / (self.coordinates[k_prev][1] - p[1])
-//                     * (self.coordinates[k_prev][0] - p[0])
-//                 < point.lat
-//             {
-//                 result = !result
-//             }
-//         }
-//     }
-
-//     return result;
-// }
-
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct Point {
     x: i32,
     y: i32,
