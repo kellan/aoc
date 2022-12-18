@@ -1,6 +1,5 @@
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::collections::VecDeque;
 use std::io::{self, Read};
 
 fn main() {
