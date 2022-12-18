@@ -7,38 +7,50 @@ fn main() {
     let input = read_stdin();
     let sensors = parse(input);
     //solve1(sensors, 2000000);
-    solve2(&sensors, 20);
+    solve2(&sensors, 4000000);
 }
 
 fn solve2(sensors: &Vec<Sensor>, max: i32) {
     let (min_x, min_y) = (0, 0);
     let (max_x, max_y) = (max, max);
 
-    let mut ranges: Vec<Vec<Range>> = vec![];
+    let mut ranges: Vec<(i32, Vec<Range>)> = vec![];
 
     for y in min_y..=max_y {
         let mut y_range: Vec<Range> = vec![];
 
         for s in sensors.iter() {
             let dy = i32::abs(s.coords.y - y);
+
             if dy > s.radius {
+                //    println!("Skip {},{}", s.coords.x, s.coords.y);
                 continue;
             }
-            let dx = (s.radius - dy) / 2;
 
-            y_range.push(Range {
+            let dx = s.radius - dy;
+
+            let r = Range {
                 left: std::cmp::max(s.coords.x - dx, 0),
                 right: std::cmp::min(s.coords.x + dx, max_x),
-            })
+            };
+
+            y_range.push(r)
         }
 
-        dbg!(&y_range);
         let merged = Range::merge(&y_range);
-        dbg!(merged);
-        break;
+        ranges.push((y, merged));
     }
 
-    dbg!(ranges);
+    //dbg!(&ranges);
+
+    for (y, range) in ranges.iter() {
+        if range.len() > 1 {
+            let x = range[0].right + 1;
+            let tuned = 4_000_000 as i64 * x as i64 + *y as i64;
+            dbg!(tuned);
+            break;
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
@@ -62,9 +74,9 @@ impl Range {
             }
 
             // if doesn't overlap, new interval
-            if merged[0].right < r.left {
+            if merged.last().unwrap().right < (r.left - 1) {
                 merged.push(r);
-            } else if merged[0].right < r.right {
+            } else if merged.last().unwrap().right < r.right {
                 let merged_range = Range {
                     left: merged[0].left,
                     right: r.right,
