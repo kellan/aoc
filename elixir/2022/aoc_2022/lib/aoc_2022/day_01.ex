@@ -2,29 +2,17 @@ defmodule Aoc2022.Day01 do
   @day "day01"
 
   def part1() do
-    input = Aoc2022.process_input(@day)
-    lines = String.split(input, "\n")
+    Aoc2022.process_input(@day)
+    |> String.split("\n\n", trim: true)
+    |> Enum.map(&sum_lines/1)
+    |> Enum.max()
+  end
 
-    {max_calories, _current_calories} =
-      Enum.reduce(
-        lines,
-        {0, 0},
-        fn line, {max, current} ->
-          case String.trim(line) do
-            "" ->
-              if current > max do
-                {current, 0}
-              else
-                {max, 0}
-              end
-
-            _ ->
-              {max, current + String.to_integer(line)}
-          end
-        end
-      )
-
-    max_calories
+  def sum_lines(sub_input) do
+    sub_input
+    |> String.split("\n", trim: true)
+    |> Enum.map(&String.to_integer/1)
+    |> Enum.sum()
   end
 
   def part2() do
