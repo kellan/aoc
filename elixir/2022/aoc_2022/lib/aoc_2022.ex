@@ -2,7 +2,7 @@ defmodule Aoc2022 do
   def process_input(day) do
     IO.puts("Control-D when finished")
     input = IO.read(:stdio, :all)
-    handle_input(day, input)
+    handle_input(day, String.trim(input))
   end
 
   defp handle_input(day, "") do
