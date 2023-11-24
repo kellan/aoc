@@ -1,4 +1,9 @@
 defmodule Aoc2022 do
+  def process_input(day, :split) do
+    input = process_input(day)
+    String.split(input, "\n", trim: true)
+  end
+
   def process_input(day) do
     IO.puts("Control-D when finished")
     input = IO.read(:stdio, :all)
