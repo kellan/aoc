@@ -35,9 +35,11 @@ defmodule Aoc2022.Day04 do
 
   def to_pair(str) do
     [left, right] = String.split(str, ",")
-    [l1, l2] = String.split(left, "-") |> Enum.map(&String.to_integer/1)
-    [r1, r2] = String.split(right, "-") |> Enum.map(&String.to_integer/1)
-    [[l1, l2], [r1, r2]]
+
+    [
+      String.split(left, "-") |> Enum.map(&String.to_integer/1),
+      String.split(right, "-") |> Enum.map(&String.to_integer/1)
+    ]
   end
 end
 
