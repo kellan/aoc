@@ -7,16 +7,37 @@ defmodule Aoc2022.Day04 do
     |> Enum.sum()
   end
 
+  def part2() do
+    Aoc2022.process_input(@day, :split)
+    |> Enum.map(&overlaps?/1)
+    |> Enum.sum()
+  end
+
   def contains?(pair) do
-    [left, right] = String.split(pair, ",")
-    [l1, l2] = String.split(left, "-") |> Enum.map(&String.to_integer/1)
-    [r1, r2] = String.split(right, "-") |> Enum.map(&String.to_integer/1)
+    [[l1, l2], [r1, r2]] = to_pair(pair)
 
     if (l1 <= r1 && l2 >= r2) or (r1 <= l1 && r2 >= l2) do
       1
     else
       0
     end
+  end
+
+  def overlaps?(pair) do
+    [[l1, l2], [r1, r2]] = to_pair(pair)
+
+    if l2 >= r1 && l1 <= r2 do
+      1
+    else
+      0
+    end
+  end
+
+  def to_pair(str) do
+    [left, right] = String.split(str, ",")
+    [l1, l2] = String.split(left, "-") |> Enum.map(&String.to_integer/1)
+    [r1, r2] = String.split(right, "-") |> Enum.map(&String.to_integer/1)
+    [[l1, l2], [r1, r2]]
   end
 end
 
