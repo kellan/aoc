@@ -5,9 +5,6 @@ defmodule Day03 do
   def part1() do
     regex =  ~r/[^0-9.]/ # match anything that is not a number or a dot
 
-    # a feel like in a different language I could do this as a single pass
-    # but I don't know how to do that in elixir
-
     lines = lines()
 
 
@@ -42,8 +39,6 @@ defmodule Day03 do
 
   def part2() do
 
-    # a feel like in a different language I could do this as a single pass
-    # but I don't know how to do that in elixir
 
     lines = lines()
 
@@ -63,6 +58,8 @@ defmodule Day03 do
       end)
     end)
 
+    # don't flatten for part 2, to get a adjacency list per symbol
+
     parts
     |> Enum.filter(fn l ->
       length(l) == 2
@@ -77,6 +74,12 @@ defmodule Day03 do
   end
 
   def parse(lines, symbol_regex) do
+
+    # a feel like in a different language I could do this as a single pass
+    # but I don't know how to do that in elixir
+
+    # line and column set of each symbol matching the regex
+
     symbols = lines
     |> Enum.with_index()
     |> Enum.reduce(MapSet.new(), fn {line, lineno}, acc ->
@@ -86,6 +89,8 @@ defmodule Day03 do
         MapSet.put(acc, {lineno, start})
       end)
     end)
+
+    # map line and column to the number it contains
 
     numbers = lines
     |> Enum.with_index()
