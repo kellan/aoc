@@ -5,3 +5,7 @@ Skeleton project for Advent of Code 2022 in Elixir, in order to start getting re
 ```
 mix day01 
 ```
+
+```
+mix run -e Day03.part1
+```
