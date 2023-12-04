@@ -13,7 +13,19 @@ defmodule Day03 do
 
     # for each symbol, check the adjancent rows and columns for numbers
 
-    parts = Enum.map(symbols, fn {lineno, symbol_x} ->
+    parts = adjacent_numbers(symbols, numbers)
+    |> List.flatten()
+    |> Enum.map(fn k ->
+      Map.get(numbers, k) |> String.to_integer()
+    end)
+    |> Enum.sum()
+
+    IO.puts(parts)
+
+  end
+
+  def adjacent_numbers(symbols, numbers) do
+    Enum.map(symbols, fn {lineno, symbol_x} ->
       rows = [lineno - 1, lineno, lineno + 1]
       Enum.filter(Map.keys(numbers), fn {l, _} ->
         l in rows
@@ -27,14 +39,6 @@ defmodule Day03 do
         end)
       end)
     end)
-    |> List.flatten()
-    |> Enum.map(fn k ->
-      Map.get(numbers, k) |> String.to_integer()
-    end)
-    |> Enum.sum()
-
-    IO.puts(parts)
-
   end
 
   def part2() do
@@ -44,19 +48,7 @@ defmodule Day03 do
 
     [symbols, numbers] = parse(lines,  ~r/\*/)
 
-    parts = Enum.map(symbols, fn {lineno, symbol_x} ->
-      rows = [lineno - 1, lineno, lineno + 1]
-      Enum.filter(Map.keys(numbers), fn {l, _} ->
-        l in rows
-      end)
-      |> Enum.filter(fn {l,s} ->
-        num = Map.get(numbers, {l, s})
-        cols = for i <- 0..(String.length(num) - 1), do: s + i
-        Enum.any?(cols, fn c ->
-          c in [symbol_x-1, symbol_x, symbol_x+1]
-        end)
-      end)
-    end)
+    parts = adjacent_numbers(symbols, numbers)
 
     # don't flatten for part 2, to get a adjacency list per symbol
 
