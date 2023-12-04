@@ -9,26 +9,12 @@ defmodule Day03 do
     # but I don't know how to do that in elixir
 
     lines = lines()
-    symbols = lines
-    |> Enum.with_index()
-    |> Enum.reduce(MapSet.new(), fn {line, lineno}, acc ->
-      Regex.scan(regex, line, return: :index)
-      |> List.flatten()
-      |> Enum.reduce(acc, fn {start, _length}, acc ->
-        MapSet.put(acc, {lineno, start})
-      end)
-    end)
 
-    numbers = lines
-    |> Enum.with_index()
-    |> Enum.reduce(Map.new(), fn {line, lineno}, acc ->
-      Regex.scan(~r/\d+/, line, return: :index)
-      |> List.flatten()
-      |> Enum.reduce(acc, fn {start, length}, acc ->
-        Map.put(acc, {lineno, start}, String.slice(line, start, length))
 
-      end)
-    end)
+    [symbols, numbers] = parse(lines,  regex)
+
+
+    # for each symbol, check the adjancent rows and columns for numbers
 
     parts = Enum.map(symbols, fn {lineno, symbol_x} ->
       rows = [lineno - 1, lineno, lineno + 1]
@@ -37,6 +23,7 @@ defmodule Day03 do
       end)
       |> Enum.filter(fn {l,s} ->
         num = Map.get(numbers, {l, s})
+        # get all the columns a number occupies
         cols = for i <- 0..(String.length(num) - 1), do: s + i
         Enum.any?(cols, fn c ->
           c in [symbol_x-1, symbol_x, symbol_x+1]
@@ -59,26 +46,8 @@ defmodule Day03 do
     # but I don't know how to do that in elixir
 
     lines = lines()
-    symbols = lines
-    |> Enum.with_index()
-    |> Enum.reduce(MapSet.new(), fn {line, lineno}, acc ->
-      Regex.scan(~r/\*/, line, return: :index)
-      |> List.flatten()
-      |> Enum.reduce(acc, fn {start, _length}, acc ->
-        MapSet.put(acc, {lineno, start})
-      end)
-    end)
 
-    numbers = lines
-    |> Enum.with_index()
-    |> Enum.reduce(Map.new(), fn {line, lineno}, acc ->
-      Regex.scan(~r/\d+/, line, return: :index)
-      |> List.flatten()
-      |> Enum.reduce(acc, fn {start, length}, acc ->
-        Map.put(acc, {lineno, start}, String.slice(line, start, length))
-
-      end)
-    end)
+    [symbols, numbers] = parse(lines,  ~r/\*/)
 
     parts = Enum.map(symbols, fn {lineno, symbol_x} ->
       rows = [lineno - 1, lineno, lineno + 1]
@@ -105,6 +74,31 @@ defmodule Day03 do
     end)
     |> Enum.sum()
     |> IO.puts()
+  end
+
+  def parse(lines, symbol_regex) do
+    symbols = lines
+    |> Enum.with_index()
+    |> Enum.reduce(MapSet.new(), fn {line, lineno}, acc ->
+      Regex.scan(symbol_regex, line, return: :index)
+      |> List.flatten()
+      |> Enum.reduce(acc, fn {start, _length}, acc ->
+        MapSet.put(acc, {lineno, start})
+      end)
+    end)
+
+    numbers = lines
+    |> Enum.with_index()
+    |> Enum.reduce(Map.new(), fn {line, lineno}, acc ->
+      Regex.scan(~r/\d+/, line, return: :index)
+      |> List.flatten()
+      |> Enum.reduce(acc, fn {start, length}, acc ->
+        Map.put(acc, {lineno, start}, String.slice(line, start, length))
+
+      end)
+    end)
+
+    [symbols, numbers]
   end
 
   def lines() do
