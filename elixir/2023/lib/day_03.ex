@@ -22,85 +22,35 @@ defmodule Day03 do
 
     numbers = lines
     |> Enum.with_index()
-    |> Enum.reduce(MapSet.new(), fn {line, lineno}, acc ->
+    |> Enum.reduce(Map.new(), fn {line, lineno}, acc ->
       Regex.scan(~r/\d+/, line, return: :index)
       |> List.flatten()
       |> Enum.reduce(acc, fn {start, length}, acc ->
+        Map.put(acc, {lineno, start}, String.slice(line, start, length))
 
-        points = Enum.map(start..(start + length - 1), fn n ->
-          [lineno, n]
-        end)
-        |> MapSet.new()
-
-        IO.inspect(points)
-
-        acc = MapSet.union(acc, points)
-        #IO.inspect(acc)
       end)
     end)
 
-    IO.inspect(numbers)
+    parts = Enum.map(symbols, fn {lineno, symbol_x} ->
+      rows = [lineno - 1, lineno, lineno + 1]
+      Enum.filter(Map.keys(numbers), fn {l, s} ->
+        l in rows
+      end)
+      |> Enum.filter(fn {l,s} ->
+        num = Map.get(numbers, {l, s})
+        cols = for i <- 0..(String.length(num) - 1), do: s + i
+        Enum.any?(cols, fn c ->
+          c in [symbol_x-1, symbol_x, symbol_x+1]
+        end)
+      end)
+    end)
+    |> List.flatten()
+    |> Enum.map(fn k ->
+      Map.get(numbers, k) |> String.to_integer()
+    end)
+    |> Enum.sum()
 
-    # Enum.each(symbols, fn {lineno, start} ->
-    #   Enum.each(@dirs, fn {dx, dy} ->
-    #     [d_lineno, d_start] = [lineno + dy, start + dx]
-
-    #   end)
-    # end)
-    #   Enum.each(@dirs, fn {dx, dy} ->
-    #     adj = Enum.at(lines, y + dy) |> String.at(x + dx)
-    #     case adj do
-    #       "." -> nil
-    #       _ -> IO.puts("found #{adj} at #{x + dx}, #{y + dy}")
-    #     end
-    #   end)
-    # end)
-    # Enum.each(symbols, fn {x, y} ->
-    #   Enum.each(@dirs, fn {dx, dy} ->
-    #     adj = Enum.at(lines, y + dy) |> String.at(x + dx)
-    #     case adj do
-    #       "." -> nil
-    #       _ -> IO.puts("found #{adj} at #{x + dx}, #{y + dy}")
-    #     end
-    #   end)
-    # end)
-
-    # lines
-    # |> Enum.with_index()
-    # |> Enum.each(fn {line, i} ->
-    #   #IO.puts("#{i} #{line}")
-    #     String.graphemes(line)
-    #     |> Enum.with_index()
-    #     |> Enum.each(fn {char, j} ->
-    #       #IO.puts("#{j},#{i} #{char}")
-
-    #     end)
-    # end)
-
-
-    # # symbols = lines
-    # |> Enum.with_index()
-    # |> Enum.reduce(MapSet.new(), fn {line, i}, acc ->
-    #   IO.puts("#{i} #{line}")
-    #   Regex.scan(regex, line, return: :index)
-    #   |> List.flatten()
-    #   |> Enum.reduce(acc, fn {start, _length}, acc ->
-    #     MapSet.put(acc, {start, i})
-    #   end)
-    # end)
-
-    # IO.inspect(lines)
-    # IO.inspect(symbols)
-
-    # Enum.each(symbols, fn {x, y} ->
-    #   Enum.each(@dirs, fn {dx, dy} ->
-    #     adj = Enum.at(lines, y + dy) |> String.at(x + dx)
-    #     case adj do
-    #       "." -> nil
-    #       _ -> IO.puts("found #{adj} at #{x + dx}, #{y + dy}")
-    #     end
-    #   end)
-    # end)
+    IO.puts(parts)
 
   end
 
