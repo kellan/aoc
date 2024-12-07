@@ -1,9 +1,9 @@
 
 export function part1(input: string): number {
   const lines = input.split("\n")
-  return 1;
+  return lines.length;
 }
 export function part2(input: string): number {
   const lines = input.split("\n")
-  return 21;
+  return lines.length * 2;
 }

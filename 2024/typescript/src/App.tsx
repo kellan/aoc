@@ -24,17 +24,32 @@ function App() {
   })
 
   const runSolution = async (day: string) => {
-    if (solutions[`/days/${day}/solution.ts`]) {
+    if (solutions[`/days/${day}/solution.ts`] !== undefined) {
       const module = await solutions[`/days/${day}/solution.ts`]()
-      const testData = await testInputs[`/days/${day}/test.txt`]()
-      const realData = await realInputs[`/days/${day}/input.txt`]()
+
+      let part1Test = 0
+      let part2Test = 0
+      let part1 = 0
+      let part2 = 0
+
+      if (testInputs[`/days/${day}/test.txt`] !== undefined) {
+        const testData = await testInputs[`/days/${day}/test.txt`]()
+        part1Test = module.part1(testData)
+        part2Test = module.part2(testData)
+      }
+
+      if (realInputs[`/days/${day}/test.txt`] !== undefined) {
+        const realData = await realInputs[`/days/${day}/input.txt`]()
+        part1 = module.part1(realData)
+        part2 = module.part2(realData)
+      }
 
       setResults({
         day: day,
-        part1Test: module.part1(testData),
-        part2Test: module.part2(testData),
-        part1: module.part1(realData),
-        part2: module.part2(realData)
+        part1Test: part1Test,
+        part2Test: part2Test,
+        part1: part1,
+        part2: part2
       })
     }
   }
@@ -67,7 +82,7 @@ function App() {
                 <td>Test</td><td>{results.part1Test}</td><td>{results.part2Test}</td>
               </tr>
               <tr>
-                <td>Real</td><td></td><td></td>
+                <td>Real</td><td>{results.part1}</td><td>{results.part2}</td>
               </tr>
             </tbody>
           </table>
