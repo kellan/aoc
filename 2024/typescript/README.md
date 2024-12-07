@@ -4,6 +4,7 @@ This is solutions for 2024 Advent of Code in Typescript, wrapped in a very simpl
 
 # Get started
 
+```
 npm install
 npm run dev
-
+```
