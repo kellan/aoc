@@ -6,6 +6,11 @@ import './App.css'
 const solutions = import.meta.glob('/days/*/solution.ts')
 const testInputs = import.meta.glob('/days/*/test.txt', { as: 'raw' })
 const realInputs = import.meta.glob('/days/*/input.txt', { as: 'raw' })
+const days = [...new Set(Object.keys(solutions)
+  .map(path => path.match(/\/days\/(\d+)/)?.[1])
+)].sort()
+
+console.log(days)
 
 function App() {
 
@@ -63,10 +68,15 @@ function App() {
   return (
     <div className="app" >
       <nav className="sidebar">
+        <h2>Advent of Code</h2>
         <ul>
-          <li><a href="#home">Foo</a></li>
-          <li><a href="#dashboard">Dashboard</a></li>
-          <li><a href="#settings">Settings</a></li>
+          {days.map(day => (
+            <li key={day}>
+              <button onClick={() => {
+                runSolution(day)
+              }}>Day {day}</button>
+            </li>
+          ))}
         </ul>
       </nav>
 
