@@ -8,3 +8,7 @@ This is solutions for 2024 Advent of Code in Typescript, wrapped in a very simpl
 npm install
 npm run dev
 ```
+
+# Colophon
+
+Light edits to `npm create vite@latest my-app -- --template react-ts`
