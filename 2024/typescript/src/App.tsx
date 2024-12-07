@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -38,7 +38,7 @@ function App() {
         part2Test = module.part2(testData)
       }
 
-      if (realInputs[`/days/${day}/test.txt`] !== undefined) {
+      if (realInputs[`/days/${day}/input.txt`] !== undefined) {
         const realData = await realInputs[`/days/${day}/input.txt`]()
         part1 = module.part1(realData)
         part2 = module.part2(realData)
@@ -54,7 +54,11 @@ function App() {
     }
   }
 
-  runSolution('01')
+  const day = '01'
+
+  useEffect(() => {
+    runSolution(day);
+  }, [day]);
 
   return (
     <div className="app" >
