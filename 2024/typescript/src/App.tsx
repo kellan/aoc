@@ -13,6 +13,17 @@ const days = [...new Set(Object.keys(solutions)
 console.log(days)
 
 function App() {
+  const [selectedDay, setSelectedDay] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('day') || days[0]
+  })
+
+  // Update URL when day changes
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    params.set('day', selectedDay)
+    window.history.replaceState({}, '', `?${params.toString()}`)
+  }, [selectedDay])
 
   const [results, setResults] = useState<{
     day: string,
@@ -59,11 +70,9 @@ function App() {
     }
   }
 
-  const day = '01'
-
   useEffect(() => {
-    runSolution(day);
-  }, [day]);
+    runSolution(selectedDay);
+  }, [selectedDay]);
 
   return (
     <div className="app" >
@@ -73,6 +82,7 @@ function App() {
           {days.map(day => (
             <li key={day}>
               <button onClick={() => {
+                setSelectedDay(day)
                 runSolution(day)
               }}>Day {day}</button>
             </li>
