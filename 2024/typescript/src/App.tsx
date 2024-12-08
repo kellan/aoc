@@ -10,7 +10,6 @@ const days = [...new Set(Object.keys(solutions)
   .map(path => path.match(/\/days\/(\d+)/)?.[1])
 )].sort()
 
-console.log(days)
 
 function App() {
   const [selectedDay, setSelectedDay] = useState(() => {
