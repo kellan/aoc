@@ -21,13 +21,12 @@ export function part1(input: string): number {
     let currentDir = 0
 
     run(grid, guardRow, guardCol, visited, currentDir)
-    console.log(visited)
     return visited.size
 }
 
 function run(grid: string[][],
     guardRow: number, guardCol: number,
-    visited: Map<string, Position>,
+    visited: Map<String, Position>,
     currentDir: number): boolean {
 
     let isLoop = false
@@ -65,14 +64,27 @@ function run(grid: string[][],
 
 export function part2(input: string): number {
     const grid = input.trim().split('\n').map((row) => row.split(''))
-    let positions = 0
-
     let guardRow = grid.findIndex((row) => row.includes('^'));
     let guardCol = grid[guardRow].indexOf('^');
-    let visited = new Set([`${guardRow},${guardCol}`])
+
+    let visited: Map<String, Position> = new Map()
+
     let currentDir = 0
+    let loops = 0
 
-    //run(grid, guardRow, guardCol, visited, currentDir)
+    run(grid, guardRow, guardCol, visited, currentDir)
 
-    return positions
+    for (const [key, value] of visited) {
+        let v1: Map<String, Position> = new Map()
+        let g1 = grid.map((row) => [...row])
+        g1[value.x][value.y] = '#'
+        let isLoop = run(g1, guardRow, guardCol, v1, currentDir)
+
+        if (isLoop) {
+            loops++
+        }
+
+    }
+
+    return loops
 }
