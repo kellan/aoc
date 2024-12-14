@@ -5,20 +5,34 @@ const dir = [
     [0, -1],
 ]
 
+type Position = {
+    x: number,
+    y: number,
+    dir: number
+}
 
 export function part1(input: string): number {
     const grid = input.trim().split('\n').map((row) => row.split(''))
     let guardRow = grid.findIndex((row) => row.includes('^'));
     let guardCol = grid[guardRow].indexOf('^');
-    let visited = new Set([`${guardRow},${guardCol}`])
+
+    let visited: Map<String, Position> = new Map()
+
     let currentDir = 0
 
     run(grid, guardRow, guardCol, visited, currentDir)
-
+    console.log(visited)
     return visited.size
 }
 
-function run(grid: string[][], guardRow: number, guardCol: number, visited: Set<string>, currentDir: number): Set<string> {
+function run(grid: string[][],
+    guardRow: number, guardCol: number,
+    visited: Map<string, Position>,
+    currentDir: number): boolean {
+
+    let isLoop = false
+    visited.set(`${guardRow},${guardCol}`, { x: guardRow, y: guardCol, dir: currentDir })
+
     while (true) {
         let dx = dir[currentDir][0]
         let dy = dir[currentDir][1]
@@ -37,10 +51,16 @@ function run(grid: string[][], guardRow: number, guardCol: number, visited: Set<
         guardRow = nextRow
         guardCol = nextCol
 
-        visited.add(`${guardRow},${guardCol}`)
+        if (visited.get(`${guardRow},${guardCol}`)) {
+            if (visited.get(`${guardRow},${guardCol}`).dir === currentDir) {
+                isLoop = true
+                break
+            }
+        }
+        visited.set(`${guardRow},${guardCol}`, { x: guardRow, y: guardCol, dir: currentDir })
     }
 
-    return visited
+    return isLoop
 }
 
 export function part2(input: string): number {
@@ -52,7 +72,7 @@ export function part2(input: string): number {
     let visited = new Set([`${guardRow},${guardCol}`])
     let currentDir = 0
 
-    run(grid, guardRow, guardCol, visited, currentDir)
+    //run(grid, guardRow, guardCol, visited, currentDir)
 
     return positions
 }
