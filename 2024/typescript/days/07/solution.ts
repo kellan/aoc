@@ -43,6 +43,8 @@ export function part2(input: string): number {
 
     let results = 0
 
+    const start = performance.now();
+
     for (let calibration of calibrations) {
         let [target, ...nums] = calibration
         let possible_values = permutate(nums, ['*', '+', 'concat'])
@@ -51,6 +53,9 @@ export function part2(input: string): number {
             results += target
         }
     }
+    const end = performance.now();
+
+    console.log('part 2 execution time: ' + (end - start) + 'ms')
 
     return results
 }

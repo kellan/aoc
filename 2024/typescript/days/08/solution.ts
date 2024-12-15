@@ -5,32 +5,37 @@ type Antenna = {
     frequency: String
 }
 
-export function part1(input: string): number {
+function parseInput(input: string): [string[][], number, number, Map<String, Antenna[]>] {
     const grid = input.trim().split('\n').map((row) => row.split(''))
     const height = grid.length
     const width = grid[0].length
 
-    let antenna: Map<String, Antenna[]> = new Map()
-
+    let antennas: Map<String, Antenna[]> = new Map()
 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             if (grid[y][x] !== '.') {
                 let freq = grid[y][x]
-                if (!antenna.has(freq)) {
-                    antenna.set(freq, [])
+                if (!antennas.has(freq)) {
+                    antennas.set(freq, [])
                 }
-                antenna.get(freq)?.push({ x: x, y: y, frequency: freq })
+                antennas.get(freq)?.push({ x: x, y: y, frequency: freq })
             }
         }
     }
 
+    return [grid, height, width, antennas]
+}
+
+export function part1(input: string): number {
+    const [grid, height, width, antennas] = parseInput(input)
+
     let antinodes = new Map<String, [number, number]>()
 
-    for (let [freq, positions] of antenna) {
+    for (let [freq, positions] of antennas) {
         let pairs = generatePairs(positions)
         pairs.forEach((pair) => {
-            let anodes = generateAntinodes(pair, width, height)
+            let anodes = generateAntinodes1(pair, width, height)
             anodes.forEach((an) => {
                 let key = `${an[0]},${an[1]}`
                 antinodes.set(key, an)
@@ -41,7 +46,7 @@ export function part1(input: string): number {
     return antinodes.size
 }
 
-function generateAntinodes(pair: [Antenna, Antenna], width: number, height: number): [number, number][] {
+function generateAntinodes1(pair: [Antenna, Antenna], width: number, height: number): [number, number][] {
     let antinodes: [number, number][] = []
     let [dx, dy] = [pair[1].x - pair[0].x, pair[1].y - pair[0].y]
     antinodes = [
@@ -57,5 +62,43 @@ function generatePairs(arr: Antenna[]): [Antenna, Antenna][] {
 }
 
 export function part2(input: string): number {
-    return 2
+    const [grid, height, width, antennas] = parseInput(input)
+
+    let antinodes = new Map<String, [number, number]>()
+
+    for (let [freq, positions] of antennas) {
+        let pairs = generatePairs(positions)
+        pairs.forEach((pair) => {
+            let anodes = generateAntinodes2(pair, width, height)
+            anodes.forEach((an) => {
+                let key = `${an[0]},${an[1]}`
+                antinodes.set(key, an)
+            })
+        })
+    }
+
+    return antinodes.size
+}
+
+function generateAntinodes2(pair: [Antenna, Antenna], width: number, height: number): [number, number][] {
+    let antinodes: [number, number][] = []
+
+    let [dx, dy] = [pair[1].x - pair[0].x, pair[1].y - pair[0].y]
+    let [x, y] = [pair[0].x + dx, pair[0].y + dy]
+
+    while (x >= 0 && y >= 0 && x < width && y < height) {
+        antinodes.push([x, y])
+        x += dx
+        y += dy
+    }
+
+    [x, y] = [pair[0].x + dx, pair[0].y + dy]
+    while (x >= 0 && y >= 0 && x < width && y < height) {
+        antinodes.push([x, y])
+        x -= dx
+        y -= dy
+    }
+
+
+    return antinodes
 }
