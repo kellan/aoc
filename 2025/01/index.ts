@@ -41,7 +41,6 @@ export function part2(input: string) {
   for (const l of lines(input)) {
     [pos, click] = turnDial(pos, l)
     clicks += click
-    //console.log(l, pos, click, clicks)
   }
   return clicks
 }
