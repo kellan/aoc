@@ -11,6 +11,7 @@ type RunOptions = {
 };
 
 export function runCli({ dir, part1, part2 }: RunOptions) {
+
   const [, , partArg, inputArg] = process.argv;
 
   const part = Number(partArg ?? "1");
