@@ -4,8 +4,6 @@ import { join } from "node:path";
 
 export type PartFn = (input: string) => unknown;
 
-type Mode = "sample" | "input";
-
 type RunOptions = {
   dir: string;            // usually import.meta.dir from the caller
   part1: PartFn;
@@ -13,7 +11,7 @@ type RunOptions = {
 };
 
 export function runCli({ dir, part1, part2 }: RunOptions) {
-  const [, , partArg, typeArg] = process.argv;
+  const [, , partArg, inputArg] = process.argv;
 
   const part = Number(partArg ?? "1");
   if (part !== 1 && part !== 2) {
@@ -21,8 +19,7 @@ export function runCli({ dir, part1, part2 }: RunOptions) {
     process.exit(1);
   }
 
-  const mode: Mode = typeArg === "input" ? "input" : "sample";
-  const filePath = join(dir, mode === "sample" ? "sample.txt" : "input.txt");
+  const filePath = join(dir, inputArg);
   const input = readFileSync(filePath, "utf8");
 
   const fn = part === 1 ? part1 : (part2 ?? part1);
