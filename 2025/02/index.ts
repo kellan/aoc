@@ -47,20 +47,10 @@ export function part2(input: string) {
 
 function isInvalid2(id: number) {
   const s = String(id)
-  let invalid = false
-  for (let i=1;i<s.length;i++) {
-    if (s.length%i !== 0) {
-      continue; // this pattern doesn't repeat evenly into the string
-    }
-    let [pat, remainder] = [s.slice(0,i), s.slice(i)]
-    let chunks = [...str_chunk(remainder, i)]
+  const re = /^(\d+)\1+$/;
+  return re.test(s)
 
-    if (chunks.every(s => s === pat)) {
-      return true;
-    }
-  }
 
-  return false
 }
 
 if (import.meta.main && process.env.NODE_ENV !== "test") {
