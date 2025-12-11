@@ -2,16 +2,19 @@ import { lines } from "../util/lines";
 import { runCli } from "../util/cli";
 import { range } from "../util/range";
 import { sum } from "../util/sum";
+import { str_chunk } from "../util/chunk";
+import { join } from "node:path";
+import { readFileSync } from "node:fs";
 
 
 export function part1(input: string) {
-  const [line] = lines(input)
-  //console.log(line)
-  let ids = []
-  line.split(',').map(seq => {
+  let ids:number[] = []
+
+  lines(input)[0]?.split(',').map(seq => {
+    
     let [s,e] = seq.split('-').map(n => Number(n))
     for (const n of range(s,e)) {
-      if (isInvalid(n)) {
+      if (isInvalid1(n)) {
         ids.push(n)
       }
     }
@@ -19,7 +22,7 @@ export function part1(input: string) {
   return sum(ids)
 }
 
-function isInvalid(id: number) {
+function isInvalid1(id: number) {
   const s = String(id)
   if (s.slice(0, s.length/2) == s.slice(s.length/2)) {
     return true
@@ -29,9 +32,36 @@ function isInvalid(id: number) {
 }
 
 export function part2(input: string) {
-  return -1
+  let ids:number[] = []
+  lines(input)[0]?.split(',').map(seq => {
+    let [s,e] = seq.split('-').map(n => Number(n))
+    for (const n of range(s,e)) {
+      if (isInvalid2(n)) {
+        ids.push(n)
+      }
+    }
+  })
+  //console.log(ids)
+  return sum(ids)
 }
 
+function isInvalid2(id: number) {
+  const s = String(id)
+  let invalid = false
+  for (let i=1;i<s.length;i++) {
+    if (s.length%i !== 0) {
+      continue; // this pattern doesn't repeat evenly into the string
+    }
+    let [pat, remainder] = [s.slice(0,i), s.slice(i)]
+    let chunks = [...str_chunk(remainder, i)]
+
+    if (chunks.every(s => s === pat)) {
+      return true;
+    }
+  }
+
+  return false
+}
 
 if (import.meta.main && process.env.NODE_ENV !== "test") {
   
@@ -40,4 +70,25 @@ if (import.meta.main && process.env.NODE_ENV !== "test") {
       part1,
       part2
   });
+}
+
+if (import.meta.main && process.env.NODE_ENV == "test") {
+
+  const sampleTxt = join(import.meta.dir, 'sample.txt');
+  const input = readFileSync(sampleTxt, "utf8");
+  let ids:number[] = []
+
+  lines(input)[0]?.split(',').map(seq => {
+  let [s,e] = seq.split('-').map(n => Number(n))
+  for (const n of range(s,e)) {
+    if (isInvalid2(n)) {
+      ids.push(n)
+    }
+  }})  
+  
+  test("day02 sample part2", () => {
+    expect(ids.sort((a, b) => a - b))
+      .toEqual([11,22,99,111,999,1010,1188511885,222222,446446,38593859,565656,824824824,2121212121]
+      .sort((a, b) => a - b))
+      })
 }
