@@ -28,3 +28,9 @@ export function runCli({ dir, part1, part2 }: RunOptions) {
 
   console.log(result);
 }
+
+export function sampleText(dir) {
+  const sampleTxt = join(dir, 'sample.txt');
+  const input = readFileSync(sampleTxt, "utf8");
+  return input;
+}
