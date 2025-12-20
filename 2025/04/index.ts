@@ -3,8 +3,9 @@ import { runCli, sampleText } from "../util/cli";
 
 import { 
     stringToGrid,
-    getNeighborsWithValues,
+    getNeighborsCells,
     getCellsWithPredicate,
+    setValueAt,
  } from "../util/grid";
 
 import type { Grid, Coordinate} from "../util/grid";
@@ -12,17 +13,30 @@ import type { Grid, Coordinate} from "../util/grid";
 export function part1(input: string) {
     let grid = stringToGrid(input)
 
-    let cells = getCellsWithPredicate(grid, c => c.value == "@").
-        filter(c => moveable(grid, c))
-
-    return cells.length
+    return moveableCells(grid).length
 }
  
 export function part2(input: string) {
+    const grid = stringToGrid(input)
+    let removed = 0;
+    let cells = moveableCells(grid)
+    while (cells.length > 0) {
+        removed += cells.length
+        for (const c of cells) {
+            setValueAt(grid, c, ".")
+        }
+        cells = moveableCells(grid)
+    }
+    return removed
 }
  
+function moveableCells(grid: Grid<string>): Cell[] {
+    return getCellsWithPredicate(grid, c => c.value == "@").
+        filter(c => moveable(grid, c))
+}
+
 function moveable(grid: Grid<string>, coord: Coordinate): boolean {
-    return getNeighborsWithValues(grid, coord).
+    return getNeighborsCells(grid, coord).
         filter(c => c.value == "@").length < 4 ? true : false    
 }
 
