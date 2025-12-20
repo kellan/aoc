@@ -16,6 +16,12 @@ export const getAt = <T>(g: Grid<T>, c: Coordinate): T | undefined =>
   inBounds(g, c) ? g[c.row][c.col] : undefined;
 
 
+export const setValueAt = <T>(g: Grid<T>, c: Coordinate, v: T) => {
+    if (inBounds(g, c)) {
+        g[c.row][c.col] = v
+    }
+}
+
 export const getCoordinates = <T>(g: Grid<T>): Coordinate[] => {
     const result: Coordinate[] = [];
     for (let row = 0; row < g.length; row++) {
@@ -61,7 +67,7 @@ export const getNeighbors = <T>(g: Grid<T>, c: Coordinate): Coordinate[] => {
   return candidates.filter((n) => inBounds(g, n));
 };
 
-export const getNeighborsWithValues = <T>(g: Grid<T>, c: Coordinate): Cell<T>[] => {
+export const getNeighborsCells = <T>(g: Grid<T>, c: Coordinate): Cell<T>[] => {
     return getNeighbors(g, c).map(n => ({
         ...n,
         value: g[n.row][n.col]
