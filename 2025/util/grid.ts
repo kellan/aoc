@@ -26,8 +26,8 @@ export const getCoordinates = <T>(g: Grid<T>): Coordinate[] => {
   return result;
 }
 
-export const getCells = <T>(g: Grid<T>): Cell[] => {
-    const result: Cell[] = []
+export const getCells = <T>(g: Grid<T>): Cell<T>[] => {
+    const result: Cell<T>[] = []
     for (let row = 0; row < g.length; row++) {
         for (let col = 0; col < g[row].length; col++) {
             result.push({ row, col, value: g[row][col] });
@@ -35,6 +35,16 @@ export const getCells = <T>(g: Grid<T>): Cell[] => {
     }
     return result
 }
+
+export const getCellsWithPredicate = <T>(
+    g: Grid<T>,
+    predicate: (cell: Cell<T>) => boolean,
+): Cell<T>[] => {
+
+    const cells = getCells(g)
+    return cells.filter(c => predicate(c))
+}
+
 
 export const getNeighbors = <T>(g: Grid<T>, c: Coordinate): Coordinate[] => {
   const candidates: Coordinate[] = [
