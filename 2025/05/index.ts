@@ -1,5 +1,6 @@
 import { lines } from "../util/lines";
 import { runCli, sampleText } from "../util/cli";
+import { sum } from "../util/sum";
 
 
 export function part1(input: string) {
@@ -30,8 +31,6 @@ export function part2(input: string) {
 
     ranges.sort((a, b) => a[0] - b[0]);
 
-    //console.log(ranges)
-
     const S = 0
     const E = 1
 
@@ -48,16 +47,8 @@ export function part2(input: string) {
         }
     }
 
-    //console.log(consolidated)
-    //for (const )
+    return sum(consolidated.map(r => r[1] - r[0] + 1));
 
-    let total = 0
-    for (const r of consolidated) {
-       // console.log(r[0], r[1])
-        total += r[1] - r[0] + 1
-    }
-
-    return total
 }
 
 if (import.meta.main && process.env.NODE_ENV !== "test") {
